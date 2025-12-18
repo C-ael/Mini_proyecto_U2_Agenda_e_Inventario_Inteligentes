@@ -106,7 +106,8 @@ public class AppointmentMain {
     // búsqueda binaria exacta por fecha y hora
     private static void runExactAppointmentSearch(Scanner scanner, Appointment[] data) {
 
-        System.out.print("\nIngrese fechaHora exacta (yyyy-MM-dd'T'HH:mm): ");
+        System.out.print("\n('T' debe escribirse obligatoriamente, y debe ponerse sin comillas y sin espacios)");
+        System.out.print("\nIngrese fecha y Hora exacta utilizando el siguiente formato: (yyyy-MM-dd'T'HH:mm): ");
         String exact = scanner.nextLine();
 
         try {
@@ -118,23 +119,20 @@ public class AppointmentMain {
             int index = BinarySearch.search(data, key);
 
             System.out.println(
-                    index >= 0
-                            ? "Cita encontrada: " + data[index]
-                            : "Cita no encontrada"
-            );
+                    index >= 0 ? "Cita encontrada: " + data[index] : "Cita no encontrada");
 
         } catch (Exception e) {
-            System.out.println("Formato incorrecto. Use yyyy-MM-dd'T'HH:mm.");
+            System.out.println("Formato de fecha incorrecto. Use yyyy-MM-dd'T'HH:mm");
         }
     }
 
     // búsqueda de citas dentro de un rango de fechas
     private static void runRangeAppointmentSearch(Scanner scanner, Appointment[] data) {
 
-        System.out.print("\nFecha inicio (yyyy-MM-dd'T'HH:mm): ");
+        System.out.print("\nFecha inicio (Formato: yyyy-MM-dd'T'HH:mm): ");
         String startStr = scanner.nextLine();
 
-        System.out.print("Fecha fin (yyyy-MM-dd'T'HH:mm): ");
+        System.out.print("Fecha fin (Formato: yyyy-MM-dd'T'HH:mm): ");
         String endStr = scanner.nextLine();
 
         try {
@@ -161,7 +159,7 @@ public class AppointmentMain {
             }
 
         } catch (Exception e) {
-            System.out.println("Formato incorrecto. Use yyyy-MM-dd'T'HH:mm.");
+            System.out.println("Formato de fecha incorrecto. Use: yyyy-MM-dd'T'HH:mm");
         }
     }
 }
