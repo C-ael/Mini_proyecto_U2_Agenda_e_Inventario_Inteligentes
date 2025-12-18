@@ -13,18 +13,12 @@ public class Patient {
         this.priority = priority;
     }
 
-
-    // obtiene el id
     public String getId() {
         return id;
     }
-
-    // obtiene el apellido
     public String getLastName() {
         return lastName;
     }
-
-    // obtiene la prioridad
     public int getPriority() {
         return priority;
     }

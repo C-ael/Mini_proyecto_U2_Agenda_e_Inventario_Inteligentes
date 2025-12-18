@@ -7,28 +7,31 @@ import edu.u2.util.CSVLoader;
 import java.util.Scanner;
 
 public class PatientMain {
+
+    // ejecuta el módulo de pacientes
     public static void runPatients(Scanner scanner) {
 
-        PatientLinkedList list =
-                CSVLoader.loadPatients("pacientes_500.csv");
+        PatientLinkedList list = CSVLoader.loadPatients("pacientes_500.csv");
 
+        // valida que existan pacientes cargados
         if (list.size() == 0) {
             System.out.println("No hay pacientes cargados.");
             return;
         }
 
-        int searchOption = 0;
+        int searchOption;
+
         do {
-            // --- MENÚ DE BÚSQUEDA/FILTRO ---
-            System.out.println("\n--- PACIENTES: BÚSQUEDA/FILTRO ---");
-            System.out.println("1. Búsqueda por Apellido (Primero/Último)");
-            System.out.println("2. Filtrar por Prioridad");
-            System.out.println("0. Volver al Menu Principal");
+            // mostrar el menú
+            System.out.println("\n--- PACIENTES ---");
+            System.out.println("1. Buscar por apellido");
+            System.out.println("2. Filtrar por prioridad");
+            System.out.println("0. Volver al menu principal");
             System.out.print("Opción: ");
 
-            // 1. Validar la entrada de la opción del menú
+            // valida entrada numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Opción inválida (debe ser un número). Volviendo al menú principal.");
+                System.out.println("Opción inválida.");
                 scanner.nextLine();
                 return;
             }
@@ -47,75 +50,76 @@ public class PatientMain {
                     System.out.println("Regresando al menu principal");
                     break;
                 default:
-                    System.out.println("Opción de búsqueda inválida.");
+                    System.out.println("Opción inválida.");
             }
+
         } while (searchOption != 0);
     }
 
+    // busca el primer y último paciente por apellido
     private static void runPatientLastNameSearch(Scanner scanner, PatientLinkedList list) {
-        String apellido;
 
-        // Bucle de validación de entrada
+        String lastName;
+
+        // valida el apellido ingresado
         while (true) {
             System.out.print("\nApellido a buscar: ");
-            apellido = scanner.nextLine().trim();
+            lastName = scanner.nextLine().trim();
 
-            if (apellido.isEmpty()) {
-                System.out.println("Error: El apellido no puede estar vacío. Intente de nuevo.");
+            if (lastName.isEmpty()) {
+                System.out.println("El apellido no puede estar vacío.");
                 continue;
             }
 
-            // --- Lógica de Validación Estricta: busca caracteres NO permitidos ---
-            boolean containsInvalidChar = false;
-            for (char c : apellido.toCharArray()) {
-                // Caracteres permitidos: Letras, espacio (' '), y guion ('-')
+            // verifica caracteres permitidos
+            boolean invalidChar = false;
+            for (char c : lastName.toCharArray()) {
                 if (!Character.isLetter(c) && c != ' ' && c != '-') {
-                    containsInvalidChar = true;
+                    invalidChar = true;
                     break;
                 }
             }
 
-            if (containsInvalidChar) {
-                System.out.println("No es correcto. El apellido solo debe contener letras, espacios o guiones. Intente de nuevo.");
-                continue; // Repite el bucle
+            if (invalidChar) {
+                System.out.println("El apellido contiene caracteres inválidos.");
+                continue;
             }
 
-            // Si la entrada es válida, salimos
             break;
         }
 
-        Patient first = list.searchFirstByLastName(apellido);
-        Patient last = list.searchLastByLastName(apellido);
+        Patient first = list.searchFirstByLastName(lastName);
+        Patient last = list.searchLastByLastName(lastName);
 
         System.out.println("Primero: " + (first != null ? first : "No encontrado"));
         System.out.println("Último: " + (last != null ? last : "No encontrado"));
     }
 
-
+    // filtra pacientes según la prioridad
     private static void runPatientPriorityFilter(Scanner scanner, PatientLinkedList list) {
-        // Bucle interno para forzar la entrada válida de prioridad
+
         while (true) {
             System.out.print("\nPrioridad a filtrar: ");
 
-            // 2. Validar que la entrada sea un entero (InputMismatchException)
+            // valida que la prioridad sea numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Error: La prioridad debe ser un número entero. Intente de nuevo.");
-                scanner.nextLine(); // Consumir la entrada no válida (ej: "jjj")
-                continue; // Volver al inicio del while(true)
+                System.out.println("La prioridad debe ser un número.");
+                scanner.nextLine();
+                continue;
             }
 
-            int prioridad = scanner.nextInt();
-            scanner.nextLine(); // Consumir el salto de línea
+            int priority = scanner.nextInt();
+            scanner.nextLine();
 
-            // Si llegamos aquí, la entrada es válida y rompemos el bucle while
-            System.out.println("Pacientes con prioridad " + prioridad + ":");
-            java.util.List<Patient> results = list.findAllByPriority(prioridad);
+            System.out.println("Pacientes con prioridad " + priority + ":");
+            java.util.List<Patient> results = list.findAllByPriority(priority);
 
             if (results.isEmpty()) {
-                System.out.println("No se encontraron pacientes con esa prioridad.");
+                System.out.println("No se encontraron pacientes.");
             } else {
                 results.forEach(System.out::println);
             }
+
             break;
         }
     }

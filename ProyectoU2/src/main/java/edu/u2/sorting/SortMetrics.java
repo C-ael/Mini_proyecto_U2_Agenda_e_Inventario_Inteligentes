@@ -40,7 +40,6 @@ public class SortMetrics {
         this.timeNano = timeNano;
     }
 
-    // getters
     public long getComparisons() {
         return comparisons;
     }

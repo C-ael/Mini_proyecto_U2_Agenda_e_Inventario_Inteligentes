@@ -84,7 +84,6 @@ public class PatientLinkedList {
         }
     }
 
-
     public int size() {
         return this.size;
     }

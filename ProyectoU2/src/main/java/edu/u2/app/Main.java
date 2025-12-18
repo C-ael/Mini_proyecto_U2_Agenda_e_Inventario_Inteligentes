@@ -1,14 +1,13 @@
 package edu.u2.app;
 
-import edu.u2.model.*;
 import edu.u2.sorting.*;
-import edu.u2.search.*;
 import edu.u2.util.TimeUtils;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static edu.u2.app.Appointmentmain.runAppointments;
+import static edu.u2.app.AppointmentMain.runAppointments;
 import static edu.u2.app.InventaryItemMain.runInventory;
 import static edu.u2.app.PatientMain.runPatients;
 
@@ -17,6 +16,7 @@ public class Main {
     private static final int RUNS = 10;
     private static final int DISCARD = 3;
 
+    // formato usado para fechas y horas
     public static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
@@ -27,11 +27,11 @@ public class Main {
         System.out.println("\n=== FIN DEL PROGRAMA ===");
     }
 
-
+    // muestra el menú principal del proyecto
     public static void runMainMenu(Scanner scanner) {
-        int option = 0;
 
-        // Bucle do-while para mantener el menú hasta que se seleccione la opción 0
+        int option = -1;
+
         do {
             System.out.println("\n=== MINI PROYECTO U2 ===");
             System.out.println("1. Agenda de citas");
@@ -40,15 +40,15 @@ public class Main {
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
 
-            // Manejo de entrada no válida para evitar el crash del programa
+            // valida entrada numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Opción inválida. Por favor, ingrese un número.");
-                scanner.nextLine(); // Consumir la entrada inválida
+                System.out.println("Opción inválida.");
+                scanner.nextLine();
                 continue;
             }
 
             option = scanner.nextInt();
-            scanner.nextLine(); // Consumir el salto de línea
+            scanner.nextLine();
 
             switch (option) {
                 case 1:
@@ -64,28 +64,30 @@ public class Main {
                     System.out.println("Saliendo de la aplicación...");
                     break;
                 default:
-                    System.out.println("Opción inválida. Intente de nuevo.");
+                    System.out.println("Opción inválida.");
             }
+
         } while (option != 0);
     }
 
-    /* ===============================
-   EXPERIMENTO DE ORDENAMIENTO
-   =============================== */
+    // ejecuta el experimento de ordenamiento y mide métricas
     public static <T extends Comparable<T>> void runSortingExperiment(
             String title,
             T[] original,
             SortingAlgorithm<T> algorithm
     ) {
+
         long[] times = new long[RUNS];
         long comparisons = 0;
         long swaps = 0;
 
         for (int i = 0; i < RUNS; i++) {
 
+            // copia el arreglo original
             T[] copy = Arrays.copyOf(original, original.length);
             SortMetrics metrics = new SortMetrics();
 
+            // mide el tiempo de ejecución
             long time = TimeUtils.measureTime(() ->
                     algorithm.sort(copy, metrics)
             );
@@ -103,6 +105,7 @@ public class Main {
         );
     }
 
+    // calcula la mediana descartando las primeras ejecuciones
     private static long medianTime(long[] times) {
         Arrays.sort(times);
         int start = DISCARD;
@@ -110,7 +113,7 @@ public class Main {
         return times[start + size / 2];
     }
 
-
+    // interfaz funcional para algoritmos de ordenamiento
     @FunctionalInterface
     public interface SortingAlgorithm<T extends Comparable<T>> {
         void sort(T[] array, SortMetrics metrics);
