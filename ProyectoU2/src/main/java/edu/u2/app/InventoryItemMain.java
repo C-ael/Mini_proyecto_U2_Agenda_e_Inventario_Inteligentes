@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 import static edu.u2.app.Main.runSortingExperiment;
 
-public class InventaryItemMain {
+public class InventoryItemMain {
 
     // ejecuta el flujo principal del inventario
     public static void runInventory(Scanner scanner) {

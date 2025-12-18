@@ -30,9 +30,7 @@ public class AppointmentMain {
         scanner.nextLine();
 
         // define el archivo según la opción elegida
-        String file = (dataset == 2)
-                ? "citas_100_casi_ordenadas.csv"
-                : "citas_100.csv";
+        String file = (dataset == 2) ? "citas_100_casi_ordenadas.csv" : "citas_100.csv";
 
         // carga las citas desde CSV
         Appointment[] data = CSVLoader.loadAppointments(file);
@@ -69,7 +67,7 @@ public class AppointmentMain {
         Arrays.sort(data);
 
         int searchOption = 0;
-        
+
         do {
             // menú de búsqueda
             System.out.println("\nSeleccione tipo de búsqueda:");

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import static edu.u2.app.AppointmentMain.runAppointments;
-import static edu.u2.app.InventaryItemMain.runInventory;
+import static edu.u2.app.InventoryItemMain.runInventory;
 import static edu.u2.app.PatientMain.runPatients;
 
 public class Main {
