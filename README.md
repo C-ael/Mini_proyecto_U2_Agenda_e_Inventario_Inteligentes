@@ -6,12 +6,12 @@
 # Tabla de Contenidos
 - [Objetivos del Proyecto](#objetivos-del-proyecto)
 - [Requisitos de Software](#requisitos-de-software)
-- [Cómo ejecutar el proyecto](#cómo-ejecutar-el-proyecto)
-- [Decisiones de diseño](#decisiones-de-diseño)
+- [Como ejecutar el proyecto](#como-ejecutar-el-proyecto)
+- [Decisiones de disenio](#decisiones-de-disenio)
 - [Precondiciones de los algoritmos](#precondiciones-de-los-algoritmos)
 - [Casos borde](#casos-borde)
 - [Datasets utilizados](#datasets-utilizados)
-- [Buenas prácticas implementadas](#buenas-prácticas-implementadas)
+- [Buenas practicas implementadas](#buenas-practicas-implementadas)
 
 ---
 
@@ -20,60 +20,68 @@
 - Implementar algoritmos de **ordenamiento** y **búsqueda** sobre distintas estructuras de datos.
 - Analizar el rendimiento de los algoritmos mediante **múltiples ejecuciones y medición de tiempos**.
 - Aplicar **búsqueda binaria** en arreglos y **búsqueda secuencial** en listas simplemente enlazadas.
-- Justificar la **elección del algoritmo** según el tipo y estado de los datos.
+- Justificar la **elección del algoritmo** según el tipo y estado de los datos utilizados.
 
 ---
 
 ## Requisitos de Software
 
-- **Java Development Kit (JDK) 17 o superior**
+- **Java Development Kit (JDK) 21 LTS**
+- **Gestor de dependencias:** Maven
 - **IDE recomendado:**
   - IntelliJ IDEA Community Edition
   - Visual Studio Code con *Extension Pack for Java*
 
 ---
 
-## Cómo ejecutar el proyecto
-1. Clonar el repositorio
+## Como ejecutar el proyecto
 
-**git clone** https://github.com/C-ael/Mini_proyecto_U2_Agenda_e_Inventario_Inteligentes.git
+1. Clonar el repositorio usando Git:
 
-2. Abrir el proyecto en el IDE.
-3. Verificar que los archivos `.csv` estén en la carpeta `resources`.
-4. Ejecutar la clase:
+git clone https://github.com/C-ael/Mini_proyecto_U2_Agenda_e_Inventario_Inteligentes.git
 
+3. Abrir el proyecto en el IDE como proyecto **Maven**.
+4. Verificar que los archivos `.csv` estén ubicados en `src/main/resources`.
+5. Ejecutar la clase:
 
-4. Usar el **menú interactivo por consola** para acceder a:
+ed.u2.app.Main
+
+6. Usar el **menú interactivo por consola** para acceder a:
 - Agenda de citas
 - Inventario
 - Pacientes
 
 ---
 
-## Decisiones de diseño
+## Decisiones de disenio
 
-- Se separó la lógica en **módulos independientes**:
-- Agenda (citas)
-- Inventario
-- Pacientes
-- Los algoritmos de ordenamiento y búsqueda se implementaron de forma **genérica** usando `Comparable<T>`.
-- El rendimiento se mide ejecutando cada algoritmo **10 veces**, descartando las primeras **3 ejecuciones** para evitar efectos de calentamiento de la JVM.
+- El proyecto sigue la **estructura estándar de Maven**, separando código fuente y recursos.
+- Se dividió la lógica en **paquetes independientes**:
+  - `app`: clases ejecutables del proyecto
+  - `list`: lista simplemente enlazada de pacientes
+  - `model`: modelos de datos
+  - `search`: algoritmos de búsqueda
+  - `sorting`: algoritmos de ordenamiento instrumentados
+  - `util`: clases de utilidades (carga CSV y medición de tiempo)
+  
+- Los algoritmos de ordenamiento trabajan sobre tipos que implementan `Comparable<T>`.
+- El rendimiento se mide ejecutando cada algoritmo **10 veces**, descartando las **3 primeras ejecuciones**.
 - Se utiliza la **mediana** como valor representativo del tiempo de ejecución.
-- La lista de pacientes se implementa como **lista simplemente enlazada (SLL)**, por lo que no se aplica búsqueda binaria en ella.
+- La lista de pacientes se implementa como **lista simplemente enlazada (SLL)**, por lo que no se aplica búsqueda binaria sobre ella.
 
 ---
 
 ## Precondiciones de los algoritmos
 
 ### Búsqueda Binaria
-- El arreglo debe estar **ordenado ascendentemente**.
+- El arreglo debe estar **ordenado previamente**.
 - Se aplica únicamente a:
-- Citas (ordenadas por fecha y hora).
-- Inventario (ordenado por stock).
+  - Citas (ordenadas por `fechaHora`).
+  - Inventario (ordenado por `stock`).
 
 ### Búsqueda Secuencial
 - No requiere orden previo.
-- Se utiliza en arreglos y en la lista enlazada de pacientes.
+- Se utiliza en la lista enlazada de pacientes y en validaciones simples.
 
 ### Ordenamiento
 - Los elementos deben implementar la interfaz `Comparable`.
@@ -82,15 +90,16 @@
 
 ## Casos borde
 
-- **Arreglo vacío**: los métodos retornan sin error y no realizan búsquedas.
-- **Elemento no encontrado**: los algoritmos retornan `-1` o `null`.
-- **Valores repetidos**:
-- En pacientes, se permite encontrar el primero, el último o todos según el criterio.
-- **Dataset desordenado**:
-- La búsqueda secuencial funciona correctamente.
-- La búsqueda binaria puede fallar si no se cumple la precondición de orden.
-- **Entrada inválida por consola**:
-- El sistema valida la entrada para evitar errores de ejecución.
+- **Arreglo vacío:** el sistema valida la longitud antes de ordenar o buscar.
+- **Elemento no encontrado:** los métodos retornan `-1` o valores nulos según el caso.
+- **Valores duplicados:**
+  - En citas e inventario se analizan mediante búsquedas por rango (`lowerBound` / `upperBound`).
+  - En pacientes se permite obtener la primera, última o todas las coincidencias.
+- **Dataset desordenado:**
+  - La búsqueda secuencial funciona correctamente.
+  - La búsqueda binaria solo se ejecuta después del ordenamiento.
+- **Errores en carga de CSV:**
+  - El sistema valida la existencia y el formato de los archivos antes de procesarlos.
 
 ---
 
@@ -102,20 +111,20 @@
 - `pacientes_500.csv`
 
 Estos datasets permiten evaluar:
-- Datos ordenados
-- Datos inversos
+- Datos desordenados
 - Datos casi ordenados
-- Datos con valores repetidos
+- Datos inversos
+- Presencia de valores repetidos
 
 ---
 
-## Buenas prácticas implementadas
+## Buenas practicas implementadas
 
-- Código modular y reutilizable.
-- Separación clara de responsabilidades.
-- Uso de genéricos.
-- Medición de tiempos encapsulada en utilidades.
-- Manejo de errores de entrada por consola.
-- Estructura de paquetes clara y coherente.
+- Uso de **estructura Maven** estándar.
+- Separación clara de responsabilidades por paquete.
+- Código fuente en inglés y mensajes de consola en español.
+- Instrumentación de algoritmos sin impresiones durante la medición.
+- Validación de datos antes de ejecutar búsquedas.
+- Código legible, modular y reutilizable.
 
 ---
