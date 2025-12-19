@@ -42,7 +42,7 @@ public class Main {
 
             // valida entrada numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Opción inválida.");
+                System.out.println("Opción inválida. Tiene que ser un número entero disponible en el menú");
                 scanner.nextLine();
                 continue;
             }
@@ -64,7 +64,7 @@ public class Main {
                     System.out.println("Saliendo de la aplicación...");
                     break;
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println("Opción inválida. Tiene que ser un número entero disponible en el menú");
             }
 
         } while (option != 0);
@@ -99,10 +99,7 @@ public class Main {
 
         long median = medianTime(times);
 
-        System.out.printf(
-                "%s | tiempo(ns): %d | comparaciones: %d | swaps: %d%n",
-                title, median, comparisons, swaps
-        );
+        System.out.printf("%s | tiempo(ns): %d | comparaciones: %d | swaps: %d%n", title, median, comparisons, swaps);
     }
 
     // calcula la mediana descartando las primeras ejecuciones

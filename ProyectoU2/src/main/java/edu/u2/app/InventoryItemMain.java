@@ -20,81 +20,159 @@ public class InventoryItemMain {
         // carga el inventario desde CSV (dataset inverso)
         InventoryItem[] data = CSVLoader.loadInventory("inventario_500_inverso.csv");
 
-        // valida que el archivo tenga datos
+        // valida que existan datos
         if (data.length == 0) {
             System.out.println("No hay inventario cargado.");
             return;
         }
 
+        System.out.println("\nInventario cargado correctamente (" + data.length + " items).");
+
         // experimento de ordenamiento con dataset inverso
         System.out.println("\n--- Experimento de Ordenamiento (Inventario Inverso) ---");
         System.out.println("El dataset inverso penaliza Insertion Sort y Bubble Sort.\n");
 
-        // ejecuta Insertion Sort sobre una copia del arreglo
+        // Insertion Sort
         System.out.println("Ejecutando Insertion Sort...");
-        runSortingExperiment("Inventario - Insertion Sort",
+        runSortingExperiment(
+                "Inventario - Insertion Sort",
                 Arrays.copyOf(data, data.length),
                 InsertionSort::sort
         );
 
-        // ejecuta Bubble Sort sobre una copia del arreglo
+        // Bubble Sort
         System.out.println("Ejecutando Bubble Sort...");
-        runSortingExperiment("Inventario - Bubble Sort",
+        runSortingExperiment(
+                "Inventario - Bubble Sort",
                 Arrays.copyOf(data, data.length),
                 BubbleSort::sort
         );
 
-        // ordena el arreglo original para permitir búsqueda binaria
-        System.out.println("\nOrdenando el arreglo principal para Búsqueda Binaria...");
+        // ordena el arreglo principal para búsqueda binaria
+        System.out.println("\nOrdenando el inventario para búsquedas...");
         Arrays.sort(data);
 
-        // BÚSQUEDA EXACTA
-        System.out.print("\nIngrese stock exacto a buscar: ");
+        int option = -1;
 
-        // valida entrada numérica
-        if (!scanner.hasNextInt()) {
-            System.out.println("Entrada no válida. Volviendo al menú principal.");
+        do {
+            // menú de búsqueda
+            System.out.println("\nSeleccione tipo de búsqueda:");
+            System.out.println("1. Búsqueda exacta por stock");
+            System.out.println("2. Búsqueda por rango de stock");
+            System.out.println("0. Volver al menú principal");
+            System.out.print("Ingrese un número entero: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
+                scanner.nextLine();
+                continue;
+            }
+
+            option = scanner.nextInt();
             scanner.nextLine();
-            return;
-        }
 
-        int stock = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    runExactStockSearch(scanner, data);
+                    break;
+
+                case 2:
+                    runRangeStockSearch(scanner, data);
+                    break;
+
+                case 0:
+                    System.out.println("Volviendo al menú principal...");
+                    break;
+
+                default:
+                    System.out.println("Opción fuera de rango. Intente nuevamente.");
+            }
+
+        } while (option != 0);
+    }
+
+    // búsqueda binaria exacta por stock
+    private static void runExactStockSearch(Scanner scanner, InventoryItem[] data) {
+
+        Integer stock = null;
+
+        while (stock == null) {
+            System.out.print("\nIngrese el stock exacto a buscar: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
+                scanner.nextLine();
+                continue;
+            }
+
+            stock = scanner.nextInt();
+            scanner.nextLine();
+        }
 
         // clave ficticia para comparar solo por stock
         InventoryItem key = new InventoryItem("0", "", stock);
 
         int index = BinarySearch.search(data, key);
 
-        System.out.println(index >= 0 ? "Item encontrado: " + data[index] : "Stock no encontrado");
+        System.out.println(
+                index >= 0
+                        ? "Item encontrado: " + data[index]
+                        : "No se encontró ningún item con ese stock."
+        );
+    }
 
-        // BÚSQUEDA CON RANGO
-        System.out.print("\nStock mínimo: ");
-        if (!scanner.hasNextInt()) {
-            System.out.println("Entrada no válida. Volviendo al menú principal.");
+    // búsqueda de inventario por rango de stock
+    private static void runRangeStockSearch(Scanner scanner, InventoryItem[] data) {
+
+        Integer min = null;
+        Integer max = null;
+
+        while (min == null) {
+            System.out.print("\nIngrese el stock mínimo: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
+                scanner.nextLine();
+                continue;
+            }
+
+            min = scanner.nextInt();
             scanner.nextLine();
+        }
+
+        while (max == null) {
+            System.out.print("Ingrese el stock máximo: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
+                scanner.nextLine();
+                continue;
+            }
+
+            max = scanner.nextInt();
+            scanner.nextLine();
+        }
+
+        if (min > max) {
+            System.out.println("El stock mínimo no puede ser mayor que el stock máximo.");
             return;
         }
-        int min = scanner.nextInt();
-
-        System.out.print("Stock máximo: ");
-        if (!scanner.hasNextInt()) {
-            System.out.println("Entrada no válida. Volviendo al menú principal.");
-            scanner.nextLine();
-            return;
-        }
-        int max = scanner.nextInt();
 
         // claves para calcular límites del rango
         InventoryItem low = new InventoryItem("0", "", min);
         InventoryItem high = new InventoryItem("0", "", max);
 
-        // obtiene índices del rango usando búsqueda binaria
         int from = Bounds.lowerBound(data, low);
         int to = Bounds.upperBound(data, high);
 
-        System.out.println("\nItems en rango de stock:");
-        for (int i = from; i < to; i++) {
-            System.out.println(data[i]);
+        System.out.println("\nItems en el rango de stock:");
+
+        if (from < to) {
+            for (int i = from; i < to; i++) {
+                System.out.println(data[i]);
+            }
+        } else {
+            System.out.println("No se encontraron items en ese rango.");
         }
     }
 }

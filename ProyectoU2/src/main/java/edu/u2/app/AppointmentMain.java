@@ -20,17 +20,35 @@ public class AppointmentMain {
     // ejecuta el flujo principal de la agenda de citas
     public static void runAppointments(Scanner scanner) {
 
-        // selección del dataset
-        System.out.println("\nSeleccione dataset:");
-        System.out.println("1. Normal");
-        System.out.println("2. Casi ordenado");
-        System.out.print("Opción: ");
+        int dataset;
 
-        int dataset = scanner.nextInt();
-        scanner.nextLine();
+        // selección segura del dataset
+        while (true) {
+            System.out.println("\nSeleccione el archivo de datos a cargar (dataset):");
+            System.out.println("1. Normal");
+            System.out.println("2. Casi ordenado");
+            System.out.print("Opción: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Entrada inválida. Ingrese un número entero.");
+                scanner.nextLine();
+                continue;
+            }
+
+            dataset = scanner.nextInt();
+            scanner.nextLine();
+
+            if (dataset == 1 || dataset == 2) {
+                break;
+            }
+
+            System.out.println("Opción fuera de rango. Intente nuevamente.");
+        }
 
         // define el archivo según la opción elegida
-        String file = (dataset == 2) ? "citas_100_casi_ordenadas.csv" : "citas_100.csv";
+        String file = (dataset == 2)
+                ? "citas_100_casi_ordenadas.csv"
+                : "citas_100.csv";
 
         // carga las citas desde CSV
         Appointment[] data = CSVLoader.loadAppointments(file);
@@ -41,24 +59,26 @@ public class AppointmentMain {
             return;
         }
 
+        System.out.println("Citas cargadas correctamente: " + data.length);
+
         // experimento de ordenamiento por fecha y hora
         System.out.println("\n--- Experimento de Ordenamiento (Fecha/Hora) ---");
 
-        // Insertion Sort
         System.out.println("Ejecutando Insertion Sort...");
-        runSortingExperiment("Citas - Insertion Sort", Arrays.copyOf(data, data.length),
+        runSortingExperiment("Citas - Insertion Sort",
+                Arrays.copyOf(data, data.length),
                 InsertionSort::sort
         );
 
-        // Bubble Sort
         System.out.println("Ejecutando Bubble Sort...");
-        runSortingExperiment("Citas - Bubble Sort", Arrays.copyOf(data, data.length),
+        runSortingExperiment("Citas - Bubble Sort",
+                Arrays.copyOf(data, data.length),
                 BubbleSort::sort
         );
 
-        // Selection Sort
         System.out.println("Ejecutando Selection Sort...");
-        runSortingExperiment("Citas - Selection Sort", Arrays.copyOf(data, data.length),
+        runSortingExperiment("Citas - Selection Sort",
+                Arrays.copyOf(data, data.length),
                 SelectionSort::sort
         );
 
@@ -66,21 +86,19 @@ public class AppointmentMain {
         System.out.println("Ordenando para Búsqueda Binaria...");
         Arrays.sort(data);
 
-        int searchOption = 0;
+        int searchOption = -1;
 
         do {
-            // menú de búsqueda
             System.out.println("\nSeleccione tipo de búsqueda:");
             System.out.println("1. Búsqueda Exacta por Fecha/Hora");
             System.out.println("2. Búsqueda por Rango de Fechas/Horas");
-            System.out.println("0. Menu Inicio");
+            System.out.println("0. Volver al Menú de Inicio");
             System.out.print("Opción: ");
 
-            // valida entrada numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Entrada no válida. Volviendo al menú principal.");
+                System.out.println("Entrada inválida. Ingrese un número entero.");
                 scanner.nextLine();
-                return;
+                continue;
             }
 
             searchOption = scanner.nextInt();
@@ -94,10 +112,10 @@ public class AppointmentMain {
                     runRangeAppointmentSearch(scanner, data);
                     break;
                 case 0:
-                    System.out.println("Volviendo al menu principal");
+                    System.out.println("Regresando al menú principal...");
                     break;
                 default:
-                    System.out.println("Opción de búsqueda inválida.");
+                    System.out.println("Opción fuera de rango. Intente nuevamente.");
             }
 
         } while (searchOption != 0);
@@ -106,37 +124,38 @@ public class AppointmentMain {
     // búsqueda binaria exacta por fecha y hora
     private static void runExactAppointmentSearch(Scanner scanner, Appointment[] data) {
 
-        System.out.print("\n('T' debe escribirse obligatoriamente, y debe ponerse sin comillas y sin espacios)");
-        System.out.print("\nIngrese fecha y Hora exacta utilizando el siguiente formato: (yyyy-MM-dd'T'HH:mm): ");
+        System.out.println("\nFormato requerido: yyyy-MM-dd'T'HH:mm");
+        System.out.print("Ingrese fecha y hora exacta: ");
         String exact = scanner.nextLine();
 
         try {
-            // clave ficticia usada solo para comparar por fechaHora
+            // clave usada solo para comparar por fechaHora
             Appointment key = new Appointment("", "", "",
                     LocalDateTime.parse(exact, DATE_TIME_FORMAT)
             );
 
             int index = BinarySearch.search(data, key);
-
-            System.out.println(
-                    index >= 0 ? "Cita encontrada: " + data[index] : "Cita no encontrada");
+            System.out.println(index >= 0
+                    ? "Cita encontrada: " + data[index]
+                    : "Cita no encontrada");
 
         } catch (Exception e) {
-            System.out.println("Formato de fecha incorrecto. Use yyyy-MM-dd'T'HH:mm");
+            System.out.println("Formato incorrecto. Intente nuevamente.");
         }
     }
 
     // búsqueda de citas dentro de un rango de fechas
     private static void runRangeAppointmentSearch(Scanner scanner, Appointment[] data) {
 
-        System.out.print("\nFecha inicio (Formato: yyyy-MM-dd'T'HH:mm): ");
+        System.out.println("\nFormato requerido: yyyy-MM-dd'T'HH:mm");
+
+        System.out.print("Fecha de inicio: ");
         String startStr = scanner.nextLine();
 
-        System.out.print("Fecha fin (Formato: yyyy-MM-dd'T'HH:mm): ");
+        System.out.print("Fecha de fin: ");
         String endStr = scanner.nextLine();
 
         try {
-            // claves para calcular límites del rango
             Appointment start = new Appointment("", "", "",
                     LocalDateTime.parse(startStr, DATE_TIME_FORMAT)
             );
@@ -145,7 +164,6 @@ public class AppointmentMain {
                     LocalDateTime.parse(endStr, DATE_TIME_FORMAT)
             );
 
-            // calcula el rango usando búsqueda binaria
             int from = Bounds.lowerBound(data, start);
             int to = Bounds.upperBound(data, end);
 
@@ -159,7 +177,7 @@ public class AppointmentMain {
             }
 
         } catch (Exception e) {
-            System.out.println("Formato de fecha incorrecto. Use: yyyy-MM-dd'T'HH:mm");
+            System.out.println("Formato incorrecto. Intente nuevamente.");
         }
     }
 }

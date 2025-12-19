@@ -4,6 +4,7 @@ import edu.u2.list.PatientLinkedList;
 import edu.u2.model.Patient;
 import edu.u2.util.CSVLoader;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class PatientMain {
@@ -19,21 +20,23 @@ public class PatientMain {
             return;
         }
 
-        int searchOption;
+        System.out.println("\nPacientes cargados correctamente (" + list.size() + " registros).");
+
+        int searchOption = -1;
 
         do {
             // mostrar el menú
             System.out.println("\n--- PACIENTES ---");
             System.out.println("1. Buscar por apellido");
             System.out.println("2. Filtrar por prioridad");
-            System.out.println("0. Volver al menu principal");
-            System.out.print("Opción: ");
+            System.out.println("0. Volver al menú principal");
+            System.out.print("Ingrese un número entero: ");
 
             // valida entrada numérica
             if (!scanner.hasNextInt()) {
-                System.out.println("Opción inválida.");
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
                 scanner.nextLine();
-                return;
+                continue; // no sale del módulo
             }
 
             searchOption = scanner.nextInt();
@@ -43,14 +46,17 @@ public class PatientMain {
                 case 1:
                     runPatientLastNameSearch(scanner, list);
                     break;
+
                 case 2:
                     runPatientPriorityFilter(scanner, list);
                     break;
+
                 case 0:
-                    System.out.println("Regresando al menu principal");
+                    System.out.println("Regresando al menú principal...");
                     break;
+
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println("Opción fuera de rango. Intente nuevamente.");
             }
 
         } while (searchOption != 0);
@@ -71,7 +77,6 @@ public class PatientMain {
                 continue;
             }
 
-            // verifica caracteres permitidos
             boolean invalidChar = false;
             for (char c : lastName.toCharArray()) {
                 if (!Character.isLetter(c) && c != ' ' && c != '-') {
@@ -81,29 +86,46 @@ public class PatientMain {
             }
 
             if (invalidChar) {
-                System.out.println("El apellido contiene caracteres inválidos.");
+                System.out.println("El apellido solo puede contener letras, espacios o guiones.");
                 continue;
             }
 
             break;
         }
 
+        System.out.println("\nBuscando pacientes con apellido: \"" + lastName + "\"");
+
         Patient first = list.searchFirstByLastName(lastName);
         Patient last = list.searchLastByLastName(lastName);
 
-        System.out.println("Primero: " + (first != null ? first : "No encontrado"));
-        System.out.println("Último: " + (last != null ? last : "No encontrado"));
+        if (first == null && last == null) {
+            System.out.println("No se encontraron pacientes con ese apellido.");
+            return;
+        }
+
+        if (first != null) {
+            System.out.println("Primer paciente encontrado:");
+            System.out.println(first);
+        }
+
+        if (last != null && last != first) {
+            System.out.println("Último paciente encontrado:");
+            System.out.println(last);
+        }
     }
 
     // filtra pacientes según la prioridad
     private static void runPatientPriorityFilter(Scanner scanner, PatientLinkedList list) {
 
-        while (true) {
-            System.out.print("\nPrioridad a filtrar: ");
+        System.out.println("\nLa prioridad indica el nivel de urgencia del paciente.");
+        System.out.println("Ejemplo: 1 = alta, 2 = media, 3 = baja.");
 
-            // valida que la prioridad sea numérica
+        while (true) {
+            System.out.print("\nIngrese la prioridad a filtrar (o 0 para volver): ");
+
+            // validar número entero
             if (!scanner.hasNextInt()) {
-                System.out.println("La prioridad debe ser un número.");
+                System.out.println("Entrada inválida. Debe ingresar un número entero.");
                 scanner.nextLine();
                 continue;
             }
@@ -111,16 +133,21 @@ public class PatientMain {
             int priority = scanner.nextInt();
             scanner.nextLine();
 
-            System.out.println("Pacientes con prioridad " + priority + ":");
+            // opción explícita de salida
+            if (priority == 0) {
+                System.out.println("Volviendo al menú de pacientes...");
+                return;
+            }
+
+            System.out.println("\nBuscando pacientes con prioridad " + priority + "...");
+
             java.util.List<Patient> results = list.findAllByPriority(priority);
 
             if (results.isEmpty()) {
-                System.out.println("No se encontraron pacientes.");
+                System.out.println("No se encontraron pacientes con esa prioridad. Intente con 1, 2 o 3");
             } else {
                 results.forEach(System.out::println);
             }
-
-            break;
         }
     }
 }
